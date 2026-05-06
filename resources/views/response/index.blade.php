@@ -247,6 +247,131 @@ body {
     transform: translateY(-1px);
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
+
+
+/* ================= PREVIEW DESIGN ================= */
+
+.preview-wrapper{
+    background:#f8fafc;
+    padding:20px;
+    border-radius:12px;
+}
+
+/* HEADER */
+.preview-header{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+.preview-header h2{
+    margin:0;
+    color:#1e293b;
+    font-size:24px;
+    font-weight:700;
+}
+
+.preview-header hr{
+    margin-top:12px;
+}
+
+/* BASIC INFO */
+.preview-info{
+    background:#ffffff;
+    border:1px solid #dbe2ea;
+    border-radius:10px;
+    padding:15px;
+    margin-bottom:20px;
+    line-height:1.8;
+}
+
+/* SECTION */
+.preview-section{
+    margin-top:25px;
+    background:#fff;
+    border-radius:10px;
+    overflow:hidden;
+    border:1px solid #dbe2ea;
+}
+
+/* SECTION TITLE */
+.preview-section-title{
+    background:linear-gradient(135deg,#16a34a,#22c55e);
+    color:#fff;
+    padding:12px 15px;
+    font-size:15px;
+    font-weight:700;
+}
+
+/* SECTION BODY */
+.preview-section-body{
+    padding:18px;
+}
+
+/* EACH BLOCK */
+.preview-block{
+    background:#f8fafc;
+    border:1px solid #dbe2ea;
+    border-radius:8px;
+    padding:14px;
+    margin-bottom:15px;
+    line-height:1.8;
+}
+
+/* LABELS */
+.preview-block b{
+    color:#0f172a;
+}
+
+/* DIVIDER */
+.preview-divider{
+    border-top:2px dashed #cbd5e1;
+    margin:15px 0;
+}
+
+/* REMARKS */
+.preview-remarks{
+    background:#fef2f2;
+    border-left:4px solid #ef4444;
+    padding:10px;
+    border-radius:6px;
+    margin-bottom:15px;
+}
+
+/* APPLICATION BOX */
+.preview-app{
+    background:#eff6ff;
+    border-left:4px solid #3b82f6;
+    padding:10px;
+    border-radius:6px;
+    margin-bottom:12px;
+}
+
+/* HARDWARE BOX */
+.preview-hardware{
+    background:#f0fdf4;
+    border-left:4px solid #22c55e;
+    padding:10px;
+    border-radius:6px;
+    margin-bottom:12px;
+}
+
+/* NETWORK BOX */
+.preview-network{
+    background:#fff7ed;
+    border-left:4px solid #f97316;
+    padding:10px;
+    border-radius:6px;
+    margin-bottom:12px;
+}
+
+/* PERIPHERAL BOX */
+.preview-peripheral{
+    background:#faf5ff;
+    border-left:4px solid #9333ea;
+    padding:12px;
+    border-radius:8px;
+    margin-bottom:15px;
+}
 </style>
 
 
@@ -1487,33 +1612,36 @@ function previewResponse() {
     let conducted = $('#conducted_by option:selected').text();
     let conforme = $('#conforme option:selected').text();
 
+    let today = new Date();
+    let dateConducted = today.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+
     html += `
-        <div style="margin-bottom:20px;">
-            <h3 style="text-align:center;">
-                PREVENTIVE MAINTENANCE
-            </h3>
+        <div style="margin-bottom:25px;">
+            <h3 style="text-align:center;">PREVENTIVE MAINTENANCE</h3>
             <hr>
 
             <p><b>Name:</b> ${employeeName}</p>
             <p><b>Division:</b> ${division}</p>
             <p><b>Conducted By:</b> ${conducted}</p>
             <p><b>Conforme:</b> ${conforme}</p>
+            <p><b>Date Conducted:</b> ${dateConducted}</p>
         </div>
     `;
 
     // ================= SECTION TEMPLATE =================
     function addSection(title, content) {
-
-        if(content.trim() !== '') {
-
+        if (content.trim() !== '') {
             html += `
-                <div style="margin-top:20px;">
+                <div style="margin-top:25px;">
 
                     <div style="
                         background:#16a34a;
-                        color:white;
+                        color:#fff;
                         padding:10px;
-                        font-size:15px;
                         font-weight:bold;
                         border-radius:6px 6px 0 0;
                     ">
@@ -1524,7 +1652,7 @@ function previewResponse() {
                         border:1px solid #ccc;
                         padding:15px;
                         border-top:none;
-                        border-radius:0 0 6px 6px;
+                        line-height:1.6;
                     ">
                         ${content}
                     </div>
@@ -1534,86 +1662,81 @@ function previewResponse() {
         }
     }
 
-    // ================= CONTAINERS =================
+    // ================= DATA HOLDERS =================
     let computer = '';
     let monitor = '';
     let peripherals = '';
     let printer = '';
 
-    // ================= LOOP ALL FORM INPUTS =================
-    $('#responseForm').serializeArray().forEach(field => {
+    // helper spacing
+    function space() {
+        return `<div style="margin-bottom:10px;"></div>`;
+    }
 
-        if(!field.value || field.name.includes('_token')) return;
+    // ================= LOOP FORM =================
+    $('#responseForm').serializeArray().forEach(field => {
 
         let name = field.name;
         let value = field.value;
 
-        // =====================================================
-        // COMPUTER
-        // =====================================================
-        if(name.includes('1773722903985536')) {
+        if (!value || name.includes('_token')) return;
 
-            if(name.includes('[brand]')) {
+        // =====================================================
+        // COMPUTER SECTION
+        // =====================================================
+        if (name.includes('1773722903985536')) {
+
+            if (name.includes('remarks')) {
+                computer += `${space()}<p><b>Remarks:</b> ${value}</p>`;
+            }
+            else if (name.includes('[brand]')) {
                 computer += `<p><b>Brand / Model:</b> ${value}</p>`;
             }
-
-            else if(name.includes('[serial]')) {
+            else if (name.includes('[serial]')) {
                 computer += `<p><b>Serial No:</b> ${value}</p>`;
             }
-
-            else if(name.includes('[year]')) {
+            else if (name.includes('[year]')) {
                 computer += `<p><b>Year Acquired:</b> ${value}</p>`;
             }
-
-            else if(name.includes('[application_name]')) {
+            else if (name.includes('[application_name]')) {
                 computer += `<p><b>Application:</b> ${value}</p>`;
             }
-
-            else if(name.includes('[application_exp]')) {
+            else if (name.includes('[application_exp]')) {
                 computer += `<p><b>Expiration:</b> ${value}</p>`;
             }
         }
 
-        // =====================================================
-        // RAM / STORAGE / CPU
-        // =====================================================
-        else if(name.includes('[ram]')) {
+        else if (name.includes('[ram]')) {
             computer += `<p><b>RAM:</b> ${value}</p>`;
         }
-
-        else if(name.includes('[storage]')) {
+        else if (name.includes('[storage]')) {
             computer += `<p><b>Storage:</b> ${value}</p>`;
         }
-
-        else if(name.includes('[cpu]')) {
+        else if (name.includes('[cpu]')) {
             computer += `<p><b>CPU:</b> ${value}</p>`;
         }
-
-        // =====================================================
-        // CONNECTION
-        // =====================================================
-        else if(name.includes('mac_')) {
+        else if (name.includes('mac_')) {
             computer += `<p><b>MAC Address:</b> ${value}</p>`;
         }
-
-        else if(name.includes('ip_')) {
+        else if (name.includes('ip_')) {
             computer += `<p><b>IP Address:</b> ${value}</p>`;
         }
 
         // =====================================================
-        // MONITOR
+        // MONITOR SECTION
         // =====================================================
-        else if(name.includes('1774487238297100')) {
+        else if (name.includes('1774487238297100')) {
 
-            if(name.includes('[brand]')) {
+            if (name.includes('remarks')) {
+                monitor += `${space()}<p><b>Remarks:</b> ${value}</p>`;
+            }
+            else if (name.includes('[brand]')) {
                 monitor += `<p><b>Brand / Model:</b> ${value}</p>`;
             }
-
-            else if(name.includes('[serial]')) {
+            else if (name.includes('[serial]')) {
                 monitor += `<p><b>Serial No:</b> ${value}</p>`;
             }
-
-            else if(name.includes('[year]')) {
+            else if (name.includes('[year]')) {
                 monitor += `<p><b>Year Acquired:</b> ${value}</p>`;
             }
         }
@@ -1621,71 +1744,51 @@ function previewResponse() {
         // =====================================================
         // PERIPHERALS
         // =====================================================
-        else if(name.includes('1773794463802942')) {
+        else if (name.includes('1773794463802942')) {
 
-            if(name.includes('[peripheral]')) {
-                peripherals += `<hr><p><b>Peripheral:</b> ${value}</p>`;
+            if (name.includes('[peripheral]')) {
+                peripherals += `<p><b>Peripheral:</b> ${value}</p>`;
             }
-
-            else if(name.includes('[brand]')) {
+            else if (name.includes('[brand]')) {
                 peripherals += `<p><b>Brand:</b> ${value}</p>`;
             }
-
-            else if(name.includes('[serial]')) {
+            else if (name.includes('[serial]')) {
                 peripherals += `<p><b>Serial:</b> ${value}</p>`;
             }
-
-            else if(name.includes('[year]')) {
+            else if (name.includes('[year]')) {
                 peripherals += `<p><b>Year:</b> ${value}</p>`;
             }
-
-            else if(name.includes('[remarks]')) {
-                peripherals += `<p><b>Remarks:</b> ${value}</p>`;
+            else if (name.includes('[remarks]')) {
+                peripherals += `${space()}<p><b>Remarks:</b> ${value}</p>`;
             }
         }
 
         // =====================================================
-        // PRINTER
+        // PRINTER SECTION
         // =====================================================
-        else if(name.includes('1774939854621235')) {
+        else if (name.includes('1774939854621235')) {
 
-            if(name.includes('[brand]')) {
+            if (name.includes('remarks')) {
+                printer += `${space()}<p><b>Remarks:</b> ${value}</p>`;
+            }
+            else if (name.includes('[brand]')) {
                 printer += `<p><b>Brand / Model:</b> ${value}</p>`;
             }
-
-            else if(name.includes('[serial]')) {
+            else if (name.includes('[serial]')) {
                 printer += `<p><b>Serial No:</b> ${value}</p>`;
             }
-
-            else if(name.includes('[year]')) {
+            else if (name.includes('[year]')) {
                 printer += `<p><b>Year Acquired:</b> ${value}</p>`;
             }
         }
-
     });
 
-    // ================= RENDER ORDER =================
-    addSection(
-        '🖥 COMPUTER (Desktop, All-in-One, Laptop)',
-        computer
-    );
+    // ================= RENDER =================
+    addSection('🖥 COMPUTER (Desktop, All-in-One, Laptop)', computer);
+    addSection('🖥 MONITOR', monitor);
+    addSection('⌨ PERIPHERALS', peripherals);
+    addSection('🖨 PRINTER', printer);
 
-    addSection(
-        '🖥 MONITOR',
-        monitor
-    );
-
-    addSection(
-        '⌨ PERIPHERALS',
-        peripherals
-    );
-
-    addSection(
-        '🖨 PRINTER',
-        printer
-    );
-
-    // ================= SHOW MODAL =================
     $('#previewBody').html(html);
     $('#PreviewModal').modal('show');
 }
