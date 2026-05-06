@@ -326,7 +326,7 @@ body {
     <div class="pm-field">
         <label>Conducted By:</label>
         <select  name="conducted_by" id="conducted_by" class="form-control form-control-sm">
-            <option value="">-- Select Staff --</option>
+            <option value=""> Select Staff </option>
         </select>
 
     </div>
@@ -391,7 +391,7 @@ body {
 
 function fetchConductedBy() {
     $('#conducted_by').empty();
-    $('#conducted_by').append(`<option value="">-- Select Staff --</option>`);
+    $('#conducted_by').append(`<option value=""> Select Staff </option>`);
 
     $.ajax({
         url: "{{ route('conducted_by.fetch') }}", // change if different route
@@ -1482,8 +1482,8 @@ function previewResponse() {
     let html = '';
 
     // ================= BASIC INFO =================
-    let name = $('select[name="name"] option:selected').text();
-    let division = $('input[name="division"]').val();
+    let name = $('select[name="Name"] option:selected').text();
+    let division = $('input[name="Division"]').val();
     let conducted = $('#conducted_by option:selected').text();
     let conforme = $('#conforme option:selected').text();
 
@@ -1501,19 +1501,36 @@ function previewResponse() {
 
     // ================= GROUPING FUNCTION =================
     function addSection(title, content) {
-        if (content.trim() !== '') {
-            html += `
-                <div style="margin-top:20px;">
-                    <h5 style="background:#16a34a;color:#fff;padding:8px;border-radius:6px;">
-                        ${title}
-                    </h5>
-                    <div style="padding:10px;border:1px solid #ddd;border-radius:6px;">
-                        ${content}
-                    </div>
+
+    if (content.trim() !== '') {
+
+        html += `
+            <div style="margin-top:20px;">
+
+                <div style="
+                    background:#16a34a;
+                    color:white;
+                    padding:10px;
+                    font-size:16px;
+                    font-weight:bold;
+                    border-radius:6px 6px 0 0;
+                ">
+                    ${title}
                 </div>
-            `;
-        }
+
+                <div style="
+                    border:1px solid #ccc;
+                    border-top:none;
+                    padding:15px;
+                    border-radius:0 0 6px 6px;
+                ">
+                    ${content}
+                </div>
+
+            </div>
+        `;
     }
+}
 
     // ================= DATA CONTAINERS =================
     let computer = '';

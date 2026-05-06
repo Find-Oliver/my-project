@@ -12,6 +12,18 @@ class Staff extends Model
     protected $connection = 'pamana';
     protected $table = 'staffs';
 
+    // ✅ HIDE SENSITIVE DATA
+    protected $hidden = [
+        'email',
+        'secondary_email',
+        'birthdate',
+        'cellphone_number',
+        'telephone_number',
+        'emergency_name',
+        'emergency_address',
+        'emergency_contact',
+    ];
+
     // 🔥 Full Name Accessor
     public function getFullnameAttribute()
     {

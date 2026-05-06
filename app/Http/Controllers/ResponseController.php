@@ -56,23 +56,32 @@ class ResponseController extends Controller
     }
 
     public function fetch_employee()
-    {
-        $data = [];
+{
+    $data = [];
 
-        $staffs = Staff::where('deleted', 0)
-                    ->where('user_id', '<>', 1)
-                    ->orderBy('last_name', 'asc')
-                    ->get();
+    $staffs = Staff::select(
+                    'user_id',
+                    'first_name',
+                    'last_name',
+                    'id_number'
+                )
+                ->where('deleted', 0)
+                ->where('user_id', '<>', 1)
+                ->orderBy('last_name', 'asc')
+                ->get();
 
-        foreach($staffs as $key => $staff){
+    foreach($staffs as $key => $staff){
 
-            $data[$key]['user_id'] = $staff->user_id;
-            $data[$key]['name'] = $staff->fullname;
-        }
+        $data[$key]['user_id'] = $staff->user_id;
 
-        return $data;
+        $data[$key]['name'] =
+            $staff->first_name . ' ' . $staff->last_name;
+
+        $data[$key]['id_number'] = $staff->id_number;
     }
 
+    return response()->json($data);
+}
     // =========================================================
     // INFO
     // =========================================================
