@@ -1482,107 +1482,208 @@ function previewResponse() {
     let html = '';
 
     // ================= BASIC INFO =================
-    let name = $('select[name="Name"] option:selected').text();
-    let division = $('input[name="Division"]').val();
+    let employeeName = $('#staffs option:selected').text();
+    let division = $('input[name="division"]').val();
     let conducted = $('#conducted_by option:selected').text();
     let conforme = $('#conforme option:selected').text();
 
     html += `
-        <div style="margin-bottom:15px;">
-            <h4>📋 PMS PREVIEW</h4>
+        <div style="margin-bottom:20px;">
+            <h3 style="text-align:center;">
+                PREVENTIVE MAINTENANCE
+            </h3>
             <hr>
 
-            <p><b>Name:</b> ${name}</p>
+            <p><b>Name:</b> ${employeeName}</p>
             <p><b>Division:</b> ${division}</p>
             <p><b>Conducted By:</b> ${conducted}</p>
             <p><b>Conforme:</b> ${conforme}</p>
         </div>
     `;
 
-    // ================= GROUPING FUNCTION =================
+    // ================= SECTION TEMPLATE =================
     function addSection(title, content) {
 
-    if (content.trim() !== '') {
+        if(content.trim() !== '') {
 
-        html += `
-            <div style="margin-top:20px;">
+            html += `
+                <div style="margin-top:20px;">
 
-                <div style="
-                    background:#16a34a;
-                    color:white;
-                    padding:10px;
-                    font-size:16px;
-                    font-weight:bold;
-                    border-radius:6px 6px 0 0;
-                ">
-                    ${title}
+                    <div style="
+                        background:#16a34a;
+                        color:white;
+                        padding:10px;
+                        font-size:15px;
+                        font-weight:bold;
+                        border-radius:6px 6px 0 0;
+                    ">
+                        ${title}
+                    </div>
+
+                    <div style="
+                        border:1px solid #ccc;
+                        padding:15px;
+                        border-top:none;
+                        border-radius:0 0 6px 6px;
+                    ">
+                        ${content}
+                    </div>
+
                 </div>
-
-                <div style="
-                    border:1px solid #ccc;
-                    border-top:none;
-                    padding:15px;
-                    border-radius:0 0 6px 6px;
-                ">
-                    ${content}
-                </div>
-
-            </div>
-        `;
+            `;
+        }
     }
-}
 
-    // ================= DATA CONTAINERS =================
+    // ================= CONTAINERS =================
     let computer = '';
     let monitor = '';
     let peripherals = '';
     let printer = '';
 
-    // ================= LOOP ALL INPUTS =================
+    // ================= LOOP ALL FORM INPUTS =================
     $('#responseForm').serializeArray().forEach(field => {
 
-        if (!field.value || field.name.includes('_token')) return;
+        if(!field.value || field.name.includes('_token')) return;
 
         let name = field.name;
+        let value = field.value;
 
-        // COMPUTER / RAM / CMOS / CONNECTION / etc (group as COMPUTER)
-        if (
-            name.includes('ram') ||
-            name.includes('cpu') ||
-            name.includes('storage') ||
-            name.includes('mac') ||
-            name.includes('ip') ||
-            name.includes('cmos')
-        ) {
-            computer += `<p><b>${name}:</b> ${field.value}</p>`;
+        // =====================================================
+        // COMPUTER
+        // =====================================================
+        if(name.includes('1773722903985536')) {
+
+            if(name.includes('[brand]')) {
+                computer += `<p><b>Brand / Model:</b> ${value}</p>`;
+            }
+
+            else if(name.includes('[serial]')) {
+                computer += `<p><b>Serial No:</b> ${value}</p>`;
+            }
+
+            else if(name.includes('[year]')) {
+                computer += `<p><b>Year Acquired:</b> ${value}</p>`;
+            }
+
+            else if(name.includes('[application_name]')) {
+                computer += `<p><b>Application:</b> ${value}</p>`;
+            }
+
+            else if(name.includes('[application_exp]')) {
+                computer += `<p><b>Expiration:</b> ${value}</p>`;
+            }
         }
 
+        // =====================================================
+        // RAM / STORAGE / CPU
+        // =====================================================
+        else if(name.includes('[ram]')) {
+            computer += `<p><b>RAM:</b> ${value}</p>`;
+        }
+
+        else if(name.includes('[storage]')) {
+            computer += `<p><b>Storage:</b> ${value}</p>`;
+        }
+
+        else if(name.includes('[cpu]')) {
+            computer += `<p><b>CPU:</b> ${value}</p>`;
+        }
+
+        // =====================================================
+        // CONNECTION
+        // =====================================================
+        else if(name.includes('mac_')) {
+            computer += `<p><b>MAC Address:</b> ${value}</p>`;
+        }
+
+        else if(name.includes('ip_')) {
+            computer += `<p><b>IP Address:</b> ${value}</p>`;
+        }
+
+        // =====================================================
         // MONITOR
-        else if (name.includes('monitor')) {
-            monitor += `<p><b>${name}:</b> ${field.value}</p>`;
+        // =====================================================
+        else if(name.includes('1774487238297100')) {
+
+            if(name.includes('[brand]')) {
+                monitor += `<p><b>Brand / Model:</b> ${value}</p>`;
+            }
+
+            else if(name.includes('[serial]')) {
+                monitor += `<p><b>Serial No:</b> ${value}</p>`;
+            }
+
+            else if(name.includes('[year]')) {
+                monitor += `<p><b>Year Acquired:</b> ${value}</p>`;
+            }
         }
 
-        // PRINTER
-        else if (name.includes('printer')) {
-            printer += `<p><b>${name}:</b> ${field.value}</p>`;
-        }
-
+        // =====================================================
         // PERIPHERALS
-        else if (name.includes('peripheral')) {
-            peripherals += `<p><b>${name}:</b> ${field.value}</p>`;
+        // =====================================================
+        else if(name.includes('1773794463802942')) {
+
+            if(name.includes('[peripheral]')) {
+                peripherals += `<hr><p><b>Peripheral:</b> ${value}</p>`;
+            }
+
+            else if(name.includes('[brand]')) {
+                peripherals += `<p><b>Brand:</b> ${value}</p>`;
+            }
+
+            else if(name.includes('[serial]')) {
+                peripherals += `<p><b>Serial:</b> ${value}</p>`;
+            }
+
+            else if(name.includes('[year]')) {
+                peripherals += `<p><b>Year:</b> ${value}</p>`;
+            }
+
+            else if(name.includes('[remarks]')) {
+                peripherals += `<p><b>Remarks:</b> ${value}</p>`;
+            }
         }
 
-        // APPLICANT / OTHERS
-        else {
-            computer += `<p><b>${name}:</b> ${field.value}</p>`;
+        // =====================================================
+        // PRINTER
+        // =====================================================
+        else if(name.includes('1774939854621235')) {
+
+            if(name.includes('[brand]')) {
+                printer += `<p><b>Brand / Model:</b> ${value}</p>`;
+            }
+
+            else if(name.includes('[serial]')) {
+                printer += `<p><b>Serial No:</b> ${value}</p>`;
+            }
+
+            else if(name.includes('[year]')) {
+                printer += `<p><b>Year Acquired:</b> ${value}</p>`;
+            }
         }
+
     });
 
     // ================= RENDER ORDER =================
-    addSection('🖥 COMPUTER / SYSTEM CHECK', computer);
-    addSection('🖥 MONITOR', monitor);
-    addSection('🖨 PRINTER', printer);
-    addSection('⌨ PERIPHERALS', peripherals);
+    addSection(
+        '🖥 COMPUTER (Desktop, All-in-One, Laptop)',
+        computer
+    );
+
+    addSection(
+        '🖥 MONITOR',
+        monitor
+    );
+
+    addSection(
+        '⌨ PERIPHERALS',
+        peripherals
+    );
+
+    addSection(
+        '🖨 PRINTER',
+        printer
+    );
 
     // ================= SHOW MODAL =================
     $('#previewBody').html(html);
