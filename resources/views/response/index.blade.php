@@ -1634,7 +1634,9 @@ function previewResponse() {
 
     // ================= SECTION TEMPLATE =================
     function addSection(title, content) {
+
         if (content.trim() !== '') {
+
             html += `
                 <div style="margin-top:25px;">
 
@@ -1652,7 +1654,7 @@ function previewResponse() {
                         border:1px solid #ccc;
                         padding:15px;
                         border-top:none;
-                        line-height:1.6;
+                        line-height:1.8;
                     ">
                         ${content}
                     </div>
@@ -1662,16 +1664,21 @@ function previewResponse() {
         }
     }
 
+    // ================= SEPARATOR =================
+    function separator() {
+        return `
+            <div style="
+                border-top:1px dashed #999;
+                margin:15px 0;
+            "></div>
+        `;
+    }
+
     // ================= DATA HOLDERS =================
     let computer = '';
     let monitor = '';
     let peripherals = '';
     let printer = '';
-
-    // helper spacing
-    function space() {
-        return `<div style="margin-bottom:10px;"></div>`;
-    }
 
     // ================= LOOP FORM =================
     $('#responseForm').serializeArray().forEach(field => {
@@ -1686,38 +1693,53 @@ function previewResponse() {
         // =====================================================
         if (name.includes('1773722903985536')) {
 
-            if (name.includes('remarks')) {
-                computer += `${space()}<p><b>Remarks:</b> ${value}</p>`;
-            }
-            else if (name.includes('[brand]')) {
+            if (name.includes('[brand]')) {
+
+                if (computer !== '') {
+                    computer += separator();
+                }
+
                 computer += `<p><b>Brand / Model:</b> ${value}</p>`;
             }
+
             else if (name.includes('[serial]')) {
                 computer += `<p><b>Serial No:</b> ${value}</p>`;
             }
+
             else if (name.includes('[year]')) {
                 computer += `<p><b>Year Acquired:</b> ${value}</p>`;
             }
+
             else if (name.includes('[application_name]')) {
                 computer += `<p><b>Application:</b> ${value}</p>`;
             }
+
             else if (name.includes('[application_exp]')) {
                 computer += `<p><b>Expiration:</b> ${value}</p>`;
+            }
+
+            else if (name.includes('[remarks]')) {
+                computer += `<p><b>Remarks:</b> ${value}</p>`;
             }
         }
 
         else if (name.includes('[ram]')) {
+            computer += separator();
             computer += `<p><b>RAM:</b> ${value}</p>`;
         }
+
         else if (name.includes('[storage]')) {
             computer += `<p><b>Storage:</b> ${value}</p>`;
         }
+
         else if (name.includes('[cpu]')) {
             computer += `<p><b>CPU:</b> ${value}</p>`;
         }
+
         else if (name.includes('mac_')) {
             computer += `<p><b>MAC Address:</b> ${value}</p>`;
         }
+
         else if (name.includes('ip_')) {
             computer += `<p><b>IP Address:</b> ${value}</p>`;
         }
@@ -1727,39 +1749,56 @@ function previewResponse() {
         // =====================================================
         else if (name.includes('1774487238297100')) {
 
-            if (name.includes('remarks')) {
-                monitor += `${space()}<p><b>Remarks:</b> ${value}</p>`;
-            }
-            else if (name.includes('[brand]')) {
+            if (name.includes('[brand]')) {
+
+                if (monitor !== '') {
+                    monitor += separator();
+                }
+
                 monitor += `<p><b>Brand / Model:</b> ${value}</p>`;
             }
+
             else if (name.includes('[serial]')) {
                 monitor += `<p><b>Serial No:</b> ${value}</p>`;
             }
+
             else if (name.includes('[year]')) {
                 monitor += `<p><b>Year Acquired:</b> ${value}</p>`;
+            }
+
+            else if (name.includes('[remarks]')) {
+                monitor += `<p><b>Remarks:</b> ${value}</p>`;
             }
         }
 
         // =====================================================
-        // PERIPHERALS
+        // PERIPHERALS SECTION
         // =====================================================
         else if (name.includes('1773794463802942')) {
 
             if (name.includes('[peripheral]')) {
+
+                if (peripherals !== '') {
+                    peripherals += separator();
+                }
+
                 peripherals += `<p><b>Peripheral:</b> ${value}</p>`;
             }
+
             else if (name.includes('[brand]')) {
                 peripherals += `<p><b>Brand:</b> ${value}</p>`;
             }
+
             else if (name.includes('[serial]')) {
                 peripherals += `<p><b>Serial:</b> ${value}</p>`;
             }
+
             else if (name.includes('[year]')) {
                 peripherals += `<p><b>Year:</b> ${value}</p>`;
             }
+
             else if (name.includes('[remarks]')) {
-                peripherals += `${space()}<p><b>Remarks:</b> ${value}</p>`;
+                peripherals += `<p><b>Remarks:</b> ${value}</p>`;
             }
         }
 
@@ -1768,17 +1807,25 @@ function previewResponse() {
         // =====================================================
         else if (name.includes('1774939854621235')) {
 
-            if (name.includes('remarks')) {
-                printer += `${space()}<p><b>Remarks:</b> ${value}</p>`;
-            }
-            else if (name.includes('[brand]')) {
+            if (name.includes('[brand]')) {
+
+                if (printer !== '') {
+                    printer += separator();
+                }
+
                 printer += `<p><b>Brand / Model:</b> ${value}</p>`;
             }
+
             else if (name.includes('[serial]')) {
                 printer += `<p><b>Serial No:</b> ${value}</p>`;
             }
+
             else if (name.includes('[year]')) {
                 printer += `<p><b>Year Acquired:</b> ${value}</p>`;
+            }
+
+            else if (name.includes('[remarks]')) {
+                printer += `<p><b>Remarks:</b> ${value}</p>`;
             }
         }
     });
@@ -1803,10 +1850,29 @@ function printFromPreview() {
         <html>
         <head>
             <title>Print Preview</title>
+
+            <style>
+                body{
+                    font-family: Arial, sans-serif;
+                    padding:20px;
+                    line-height:1.7;
+                }
+
+                p{
+                    margin:4px 0;
+                }
+
+                hr{
+                    margin:15px 0;
+                }
+            </style>
+
         </head>
+
         <body>
             ${content}
         </body>
+
         </html>
     `);
 
