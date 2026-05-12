@@ -275,7 +275,7 @@
                 },
                 success: function(response) {
 
-                    if(response.status == 'true') {
+                    if(response.status == true) {
                         toastr.success('Deleted successfully!', 'Success');
                     } else {
                         toastr.error('Delete failed.', 'Error');

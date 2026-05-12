@@ -16,10 +16,7 @@ class Conducted_byController extends Controller
     // FETCH ALL DATA (datatable)
     public function fetch()
     {
-        $conducted = Conducted_by::with('staff')
-                    ->where('deleted', 0)
-                    ->orderBy('user_id', 'asc')
-                    ->get();
+        $conducted = Conducted_by::with('staff') ->where('deleted', 0) ->orderBy('user_id', 'asc')->get();
 
         return response()->json($conducted);
     }
@@ -54,26 +51,26 @@ class Conducted_byController extends Controller
     }
 
     // DELETE (soft delete style)
-    public function delete(Request $request)
-    {
-        $conducted = Conducted_by::find($request->id);
+   public function delete(Request $request)
+{
+    $conducted = Conducted_by::where('user_id', $request->conducted_by_id)->first();
 
-        if ($conducted) {
+    if ($conducted) {
 
-            $conducted->deleted = 1;
-
-            $conducted->save();
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Deleted successfully'
-            ]);
-        }
+        $conducted->deleted = 1;
+        $conducted->save();
 
         return response()->json([
-            'status' => false,
-            'message' => 'Data not found'
+            'status' => true,
+            'message' => 'Deleted successfully'
         ]);
     }
+
+    return response()->json([
+        'status' => false,
+        'message' => 'Record not found'
+    ]);
 }
+}
+
 
