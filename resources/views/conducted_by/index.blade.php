@@ -181,7 +181,7 @@
                 _token: "{{ csrf_token() }}"
             },
             success: function(response) {
-                console.log(response);
+                // console.log(response);
                 $('#conducted_by_tbody').empty();
 
                 $.each(response, function(index, conducted_by) {

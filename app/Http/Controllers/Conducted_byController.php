@@ -59,13 +59,21 @@ class Conducted_byController extends Controller
         $conducted = Conducted_by::find($request->id);
 
         if ($conducted) {
+
             $conducted->deleted = 1;
+
             $conducted->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Deleted successfully'
+            ]);
         }
 
         return response()->json([
-            'status' => true,
-            'message' => 'Deleted successfully'
+            'status' => false,
+            'message' => 'Data not found'
         ]);
     }
 }
+
