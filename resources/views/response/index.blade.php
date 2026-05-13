@@ -1708,6 +1708,7 @@ function previewResponse() {
 
             else if (name.includes('[year]')) {
                 computer += `<p><b>Year Acquired:</b> ${value}</p>`;
+                computer += separator();
             }
 
             else if (name.includes('[application_name]')) {
@@ -1734,6 +1735,7 @@ function previewResponse() {
 
         else if (name.includes('[cpu]')) {
             computer += `<p><b>CPU:</b> ${value}</p>`;
+            computer += separator();
         }
 
         else if (name.includes('mac_')) {
