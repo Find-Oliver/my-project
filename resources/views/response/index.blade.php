@@ -1326,8 +1326,127 @@ function toggleRemarks(select){
     }
 
 
-    function saveResponse() {
+  function saveResponse() {
 
+    // =========================================
+    // BASIC REQUIRED FIELDS
+    // =========================================
+    let staff = $('#staffs').val();
+    let division = $('input[name="division"]').val().trim();
+    let conducted = $('#conducted_by').val();
+    let conforme = $('#conforme').val();
+
+    if (staff == '') {
+        toastr.error('Please select employee');
+        return;
+    }
+
+    if (division == '') {
+        toastr.error('Division is required');
+        return;
+    }
+
+    if (conducted == '') {
+        toastr.error('Please select conducted by');
+        return;
+    }
+
+    if (conforme == '') {
+        toastr.error('Please select conforme');
+        return;
+    }
+
+    // =========================================
+    // CHECK ALL RADIO QUESTIONS
+    // =========================================
+    let radioError = false;
+
+    $('.radio-group').each(function () {
+
+        let checked = $(this).find('input[type="radio"]:checked').length;
+
+        if (checked == 0) {
+
+            toastr.error('Please answer all Yes/No questions');
+
+            radioError = true;
+
+            return false;
+        }
+    });
+
+    if (radioError) {
+        return;
+    }
+
+    // =========================================
+    // REMARKS REQUIRED WHEN NO
+    // =========================================
+    let remarksError = false;
+
+    $('input[type="radio"][value="0"]:checked').each(function () {
+
+        let name = $(this).attr('name');
+
+        let quest = name.match(/\d+/)[0];
+
+        let remarks = $(`textarea[name="remarks[${quest}]"]`).val();
+
+        if (!remarks || remarks.trim() == '') {
+
+            toastr.error('Remarks are required for NO answer');
+
+            remarksError = true;
+
+            return false;
+        }
+
+    });
+
+    if (remarksError) {
+        return;
+    }
+
+    // =========================================
+    // CHECK EMPTY INPUTS
+    // =========================================
+    let emptyField = false;
+
+    $('#responseForm')
+    .find('input[type="text"], textarea')
+    .each(function () {
+
+        // skip hidden remarks container
+        if ($(this).is(':hidden')) {
+            return true;
+        }
+
+        // skip optional remarks
+        if ($(this).attr('name') &&
+            $(this).attr('name').includes('remarks')) {
+            return true;
+        }
+
+        if ($(this).val().trim() == '') {
+
+            toastr.error('Please fill in all fields');
+
+            $(this).focus();
+
+            emptyField = true;
+
+            return false;
+        }
+
+    });
+
+    if (emptyField) {
+        return;
+    }
+
+    // =========================================
+    // SAVE AJAX
+    // =========================================
     let formData = new FormData($('#responseForm')[0]);
 
     $.ajax({
@@ -1336,20 +1455,46 @@ function toggleRemarks(select){
         data: formData,
         processData: false,
         contentType: false,
+
+        beforeSend: function () {
+
+            $('.btn-primary')
+            .prop('disabled', true)
+            .text('Saving...');
+        },
+
         success: function(response) {
 
-            $('#ResponseModal').modal('hide');
+            $('.btn-primary')
+            .prop('disabled', false)
+            .text('Save');
 
-            if (response.status === true) {
-                toastr.success('Response saved successfully!', 'Success');
-            } else {
-                toastr.error('Failed to save response.', 'Error');
+            if(response.status === true){
+
+                toastr.success('Saved successfully');
+
+                $('#ResponseModal').modal('hide');
+
+                $('#responseForm')[0].reset();
+
+                fetchResponse();
+
+            }else{
+
+                toastr.error('Save failed');
+
             }
-
-            fetchResponse(); // Refresh the response list
         },
+
         error: function(xhr) {
-            console.error(xhr.responseText);
+
+            $('.btn-primary')
+            .prop('disabled', false)
+            .text('Save');
+
+            console.log(xhr.responseText);
+
+            toastr.error('Something went wrong');
         }
     });
 }
@@ -1895,6 +2040,33 @@ function printFromPreview() {
 //         $('.remarks-container-' + quest).empty();
 //     }
 // });
+
+$(document).on('input', 'input[name*="[year]"]', function () {
+
+    this.value = this.value.replace(/[^0-9]/g, '');
+
+    if (this.value.length > 4) {
+        this.value = this.value.slice(0, 4);
+    }
+
+});
+
+$(document).on('blur', 'input[name^="ip_"]', function () {
+
+    let ip = $(this).val();
+
+    let pattern =
+        /^(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)$/;
+
+    if (ip != '' && !pattern.test(ip)) {
+
+        toastr.error('Invalid IP Address');
+
+        $(this).focus();
+
+    }
+
+});
 </script>
 
 

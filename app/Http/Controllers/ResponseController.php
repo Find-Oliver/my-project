@@ -113,92 +113,141 @@ class ResponseController extends Controller
     // =========================================================
     // SAVE / UPDATE
     // =========================================================
-    public function save(Request $request)
-    {
+   public function save(Request $request)
+{
 
-        // =====================================================
-        // CHECK IF EDIT OR ADD
-        // =====================================================
-        if($request->response_id != ''){
+    // =====================================================
+    // VALIDATE IP ADDRESS
+    // =====================================================
+    foreach ($request->all() as $key => $value) {
 
-            // ✅ EDIT
-            $pms = Pmsrecord::find($request->response_id);
+        // check kung ip_ field
+        if (str_starts_with($key, 'ip_')) {
 
-            $pms_id = $pms->id;
+            // validate IP address
+            if (!empty($value) && !filter_var($value, FILTER_VALIDATE_IP)) {
 
-        }else{
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Invalid IP Address'
+                ]);
+            }
+        }
+    }
 
-            // ✅ ADD
-            $pms = new Pmsrecord();
+    // =====================================================
+    // CHECK IF EDIT OR ADD
+    // =====================================================
+    if($request->response_id != ''){
 
-            $pms_id =
+        // ✅ EDIT
+        $pms = Pmsrecord::find($request->response_id);
+
+        if(!$pms){
+            return response()->json([
+                'status' => false,
+                'message' => 'Record not found'
+            ]);
+        }
+
+        $pms_id = $pms->id;
+
+    }else{
+
+        // ✅ ADD
+        $pms = new Pmsrecord();
+
+        $pms_id =
+            substr(round(microtime(true) * 1000), -13)
+            . str_pad(random_int(0, 999), 3, '0', STR_PAD_LEFT);
+
+        $pms->id = $pms_id;
+    }
+
+    // =====================================================
+    // SAVE PMS RECORD
+    // =====================================================
+    $pms->name = $request->name;
+    $pms->division = $request->division;
+    $pms->conducted_by = $request->conducted_by;
+    $pms->conforme = $request->conforme;
+
+    $pms->save();
+
+    // =====================================================
+    // SAVE RESPONSES
+    // =====================================================
+    $questionaires = questionaire::where('deleted', 0)->get();
+
+    foreach($questionaires as $questionaire){
+
+        // =================================================
+        // CHECK EXISTING RESPONSE
+        // =================================================
+        $response = ModelsResponse::where('pms_id', $pms_id)
+                    ->where('question_id', $questionaire->id)
+                    ->first();
+
+        // =================================================
+        // CREATE NEW IF NOT EXIST
+        // =================================================
+        if(!$response){
+
+            $response = new ModelsResponse();
+
+            $response->id =
                 substr(round(microtime(true) * 1000), -13)
                 . str_pad(random_int(0, 999), 3, '0', STR_PAD_LEFT);
 
-            $pms->id = $pms_id;
+            $response->question_id = $questionaire->id;
+            $response->pms_id = $pms_id;
         }
 
-        // =====================================================
-        // SAVE PMS RECORD
-        // =====================================================
-        $pms->name = $request->name;
-        $pms->division = $request->division;
-        $pms->conducted_by = $request->conducted_by;
-        $pms->conforme = $request->conforme;
+        // =================================================
+        // GET STATUS
+        // =================================================
+        $status =
+            $request->input($questionaire->id . '.response');
 
-        $pms->save();
+        // default 0 kapag null
+        $response->status = ($status !== null) ? $status : 0;
 
-        // =====================================================
-        // SAVE RESPONSES
-        // =====================================================
-        $questionaires = questionaire::where('deleted', 0)->get();
+        // =================================================
+        // RESPONSE ARRAY
+        // =================================================
+        $responseArray = [];
 
-        foreach($questionaires as $questionaire){
+        if($request->has($questionaire->id)){
 
-            // =================================================
-            // CHECK EXISTING RESPONSE
-            // =================================================
-            $response = ModelsResponse::where('pms_id', $pms_id)
-                        ->where('question_id', $questionaire->id)
-                        ->first();
+            $questionData = $request->input($questionaire->id);
 
-            // =================================================
-            // CREATE NEW IF NOT EXIST
-            // =================================================
-            if(!$response){
+            if(isset($questionData['response_array'])){
 
-                $response = new ModelsResponse();
-
-                $response->id =
-                    substr(round(microtime(true) * 1000), -13)
-                    . str_pad(random_int(0, 999), 3, '0', STR_PAD_LEFT);
-
-                $response->question_id = $questionaire->id;
-                $response->pms_id = $pms_id;
+                $responseArray = $questionData['response_array'];
             }
-
-            // =================================================
-            // UPDATE VALUES
-            // =================================================
-            $response->status =
-                $request->input($questionaire->id . '.response') ?? 0;
-
-            $response->response_array = json_encode(
-                $request->input($questionaire->id)['response_array'] ?? []
-            );
-
-            $response->remarks = json_encode(
-                $request->input('remarks.' . $questionaire->id) ?? ''
-            );
-
-            $response->save();
         }
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Saved successfully'
-        ]);
+        $response->response_array = json_encode($responseArray);
+
+        // =================================================
+        // REMARKS
+        // =================================================
+        $remarks =
+            $request->input('remarks.' . $questionaire->id);
+
+        $response->remarks = json_encode($remarks ?? '');
+
+        // =================================================
+        // SAVE RESPONSE
+        // =================================================
+        $response->save();
     }
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Saved successfully'
+    ]);
+}
 
     // =========================================================
     // DELETE
