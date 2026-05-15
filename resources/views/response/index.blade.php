@@ -1758,6 +1758,7 @@ function previewResponse() {
     let conforme = $('#conforme option:selected').text();
 
     let today = new Date();
+
     let dateConducted = today.toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',
@@ -1776,6 +1777,30 @@ function previewResponse() {
             <p><b>Date Conducted:</b> ${dateConducted}</p>
         </div>
     `;
+
+    // ================= YES / NO FORMAT =================
+    function yesNoBadge(value) {
+
+        return value == "1"
+            ? '<span style="color:green;font-weight:bold;">YES</span>'
+            : '<span style="color:red;font-weight:bold;">NO</span>';
+    }
+
+    // ================= REMARKS FORMAT =================
+    function remarksBox(text) {
+
+        return `
+            <div style="
+                margin-top:8px;
+                padding:10px;
+                background:#fff1f2;
+                border-left:4px solid #ef4444;
+                border-radius:6px;
+            ">
+                <b>Remarks:</b> ${text}
+            </div>
+        `;
+    }
 
     // ================= SECTION TEMPLATE =================
     function addSection(title, content) {
@@ -1811,6 +1836,7 @@ function previewResponse() {
 
     // ================= SEPARATOR =================
     function separator() {
+
         return `
             <div style="
                 border-top:1px dashed #999;
@@ -1824,6 +1850,7 @@ function previewResponse() {
     let monitor = '';
     let peripherals = '';
     let printer = '';
+    let others = '';
 
     // ================= LOOP FORM =================
     $('#responseForm').serializeArray().forEach(field => {
@@ -1838,7 +1865,28 @@ function previewResponse() {
         // =====================================================
         if (name.includes('1773722903985536')) {
 
-            if (name.includes('[brand]')) {
+            if (name.includes('[response]')) {
+
+                computer += `
+                    <p>
+                        <b>Application Check / Software Updates:</b>
+                        ${yesNoBadge(value)}
+                    </p>
+                `;
+
+                // REMARKS IF NO
+                if (value == "0") {
+
+                    let remarks =
+                        $(`textarea[name="remarks[1773722903985536]"]`).val();
+
+                    if (remarks) {
+                        computer += remarksBox(remarks);
+                    }
+                }
+            }
+
+            else if (name.includes('[brand]')) {
 
                 if (computer !== '') {
                     computer += separator();
@@ -1852,6 +1900,7 @@ function previewResponse() {
             }
 
             else if (name.includes('[year]')) {
+
                 computer += `<p><b>Year Acquired:</b> ${value}</p>`;
                 computer += separator();
             }
@@ -1863,13 +1912,36 @@ function previewResponse() {
             else if (name.includes('[application_exp]')) {
                 computer += `<p><b>Expiration:</b> ${value}</p>`;
             }
+        }
 
-            else if (name.includes('[remarks]')) {
-                computer += `<p><b>Remarks:</b> ${value}</p>`;
+        // =====================================================
+        // HARDWARE STATUS
+        // =====================================================
+        else if (name.includes('[response]') && name.includes('1773722903985537')) {
+
+            computer += `
+                <p>
+                    <b>Hardware Status:</b>
+                    ${yesNoBadge(value)}
+                </p>
+            `;
+
+            if (value == "0") {
+
+                let remarks =
+                    $(`textarea[name="remarks[1773722903985537]"]`).val();
+
+                if (remarks) {
+                    computer += remarksBox(remarks);
+                }
             }
         }
 
+        // =====================================================
+        // RAM / STORAGE / CPU
+        // =====================================================
         else if (name.includes('[ram]')) {
+
             computer += separator();
             computer += `<p><b>RAM:</b> ${value}</p>`;
         }
@@ -1879,8 +1951,55 @@ function previewResponse() {
         }
 
         else if (name.includes('[cpu]')) {
+
             computer += `<p><b>CPU:</b> ${value}</p>`;
             computer += separator();
+        }
+
+        // =====================================================
+        // CMOS BATTERY
+        // =====================================================
+        else if (name.includes('[response]') && name.includes('1773722903985538')) {
+
+            computer += `
+                <p>
+                    <b>CMOS Battery:</b>
+                    ${yesNoBadge(value)}
+                </p>
+            `;
+
+            if (value == "0") {
+
+                let remarks =
+                    $(`textarea[name="remarks[1773722903985538]"]`).val();
+
+                if (remarks) {
+                    computer += remarksBox(remarks);
+                }
+            }
+        }
+
+        // =====================================================
+        // CONNECTION CHECK
+        // =====================================================
+        else if (name.includes('[response]') && name.includes('1773722903985539')) {
+
+            computer += `
+                <p>
+                    <b>Connection Check:</b>
+                    ${yesNoBadge(value)}
+                </p>
+            `;
+
+            if (value == "0") {
+
+                let remarks =
+                    $(`textarea[name="remarks[1773722903985539]"]`).val();
+
+                if (remarks) {
+                    computer += remarksBox(remarks);
+                }
+            }
         }
 
         else if (name.includes('mac_')) {
@@ -1892,11 +2011,169 @@ function previewResponse() {
         }
 
         // =====================================================
+        // DELETE TEMP FILES
+        // =====================================================
+        else if (name.includes('[response]') && name.includes('1773722903985540')) {
+
+            computer += `
+                <p>
+                    <b>Delete Temporary Files:</b>
+                    ${yesNoBadge(value)}
+                </p>
+            `;
+
+            if (value == "0") {
+
+                let remarks =
+                    $(`textarea[name="remarks[1773722903985540]"]`).val();
+
+                if (remarks) {
+                    computer += remarksBox(remarks);
+                }
+            }
+        }
+
+        // =====================================================
+        // CLEAN STARTUP
+        // =====================================================
+        else if (name.includes('[response]') && name.includes('1773722903985541')) {
+
+            computer += `
+                <p>
+                    <b>Clean Startup Applications:</b>
+                    ${yesNoBadge(value)}
+                </p>
+            `;
+
+            if (value == "0") {
+
+                let remarks =
+                    $(`textarea[name="remarks[1773722903985541]"]`).val();
+
+                if (remarks) {
+                    computer += remarksBox(remarks);
+                }
+            }
+        }
+
+        // =====================================================
+        // CLEANLINESS CHECK
+        // =====================================================
+        else if (name.includes('[response]') && name.includes('1773722903985542')) {
+
+            computer += `
+                <p>
+                    <b>Cleanliness Check:</b>
+                    ${yesNoBadge(value)}
+                </p>
+            `;
+
+            if (value == "0") {
+
+                let remarks =
+                    $(`textarea[name="remarks[1773722903985542]"]`).val();
+
+                if (remarks) {
+                    computer += remarksBox(remarks);
+                }
+            }
+        }
+
+        // =====================================================
+        // CREATE ADMIN ACCOUNT
+        // =====================================================
+        else if (name.includes('[response]') && name.includes('1773722903985543')) {
+
+            computer += `
+                <p>
+                    <b>Create Admin Account:</b>
+                    ${yesNoBadge(value)}
+                </p>
+            `;
+
+            if (value == "0") {
+
+                let remarks =
+                    $(`textarea[name="remarks[1773722903985543]"]`).val();
+
+                if (remarks) {
+                    computer += remarksBox(remarks);
+                }
+            }
+        }
+
+        // =====================================================
+        // RESTORE POINT
+        // =====================================================
+        else if (name.includes('[response]') && name.includes('1773722903985544')) {
+
+            computer += `
+                <p>
+                    <b>Create Restore Point:</b>
+                    ${yesNoBadge(value)}
+                </p>
+            `;
+
+            if (value == "0") {
+
+                let remarks =
+                    $(`textarea[name="remarks[1773722903985544]"]`).val();
+
+                if (remarks) {
+                    computer += remarksBox(remarks);
+                }
+            }
+        }
+
+        // =====================================================
+        // WALLPAPER
+        // =====================================================
+        else if (name.includes('[response]') && name.includes('1773722903985545')) {
+
+            computer += `
+                <p>
+                    <b>Wallpaper Updated:</b>
+                    ${yesNoBadge(value)}
+                </p>
+            `;
+
+            if (value == "0") {
+
+                let remarks =
+                    $(`textarea[name="remarks[1773722903985545]"]`).val();
+
+                if (remarks) {
+                    computer += remarksBox(remarks);
+                }
+            }
+        }
+
+        // =====================================================
         // MONITOR SECTION
         // =====================================================
         else if (name.includes('1774487238297100')) {
 
-            if (name.includes('[brand]')) {
+            if (name.includes('[response]')) {
+
+                monitor += `
+                    <p>
+                        <b>Hardware Status:</b>
+                        ${yesNoBadge(value)}
+                    </p>
+                `;
+
+                if (value == "0") {
+
+                    let remarks =
+                        $(`textarea[name="remarks[1774487238297100]"]`).val();
+
+                    if (remarks) {
+                        monitor += remarksBox(remarks);
+                    }
+                }
+            }
+
+            else if (name.includes('[brand]')) {
 
                 if (monitor !== '') {
                     monitor += separator();
@@ -1911,10 +2188,6 @@ function previewResponse() {
 
             else if (name.includes('[year]')) {
                 monitor += `<p><b>Year Acquired:</b> ${value}</p>`;
-            }
-
-            else if (name.includes('[remarks]')) {
-                monitor += `<p><b>Remarks:</b> ${value}</p>`;
             }
         }
 
@@ -1945,7 +2218,7 @@ function previewResponse() {
             }
 
             else if (name.includes('[remarks]')) {
-                peripherals += `<p><b>Remarks:</b> ${value}</p>`;
+                peripherals += remarksBox(value);
             }
         }
 
@@ -1954,7 +2227,27 @@ function previewResponse() {
         // =====================================================
         else if (name.includes('1774939854621235')) {
 
-            if (name.includes('[brand]')) {
+            if (name.includes('[response]')) {
+
+                printer += `
+                    <p>
+                        <b>Hardware Status:</b>
+                        ${yesNoBadge(value)}
+                    </p>
+                `;
+
+                if (value == "0") {
+
+                    let remarks =
+                        $(`textarea[name="remarks[1774939854621235]"]`).val();
+
+                    if (remarks) {
+                        printer += remarksBox(remarks);
+                    }
+                }
+            }
+
+            else if (name.includes('[brand]')) {
 
                 if (printer !== '') {
                     printer += separator();
@@ -1970,61 +2263,61 @@ function previewResponse() {
             else if (name.includes('[year]')) {
                 printer += `<p><b>Year Acquired:</b> ${value}</p>`;
             }
-
-            else if (name.includes('[remarks]')) {
-                printer += `<p><b>Remarks:</b> ${value}</p>`;
-            }
         }
+
+        // =====================================================
+        // OTHER QUESTIONS
+        // =====================================================
+        else if (name.includes('[response]')) {
+
+            let questionId = name.match(/\d+/)[0];
+
+            let questionLabel = $('input[name="' + name + '"]')
+                .closest('.form-group')
+                .find('label')
+                .first()
+                .text()
+                .trim();
+
+            others += `
+                <div style="margin-bottom:15px;">
+
+                    <p>
+                        <b>${questionLabel}</b> :
+                        ${yesNoBadge(value)}
+                    </p>
+            `;
+
+            // SHOW REMARKS IF NO
+            if (value == "0") {
+
+                let remarks =
+                    $(`textarea[name="remarks[${questionId}]"]`).val();
+
+                if (remarks) {
+                    others += remarksBox(remarks);
+                }
+            }
+
+            others += `</div>`;
+        }
+
     });
 
     // ================= RENDER =================
     addSection('🖥 COMPUTER (Desktop, All-in-One, Laptop)', computer);
+
     addSection('🖥 MONITOR', monitor);
+
     addSection('⌨ PERIPHERALS', peripherals);
+
     addSection('🖨 PRINTER', printer);
 
+    addSection('📋 OTHER CHECKLIST', others);
+
     $('#previewBody').html(html);
+
     $('#PreviewModal').modal('show');
-}
-
-function printFromPreview() {
-
-    let content = document.getElementById('previewBody').innerHTML;
-
-    let win = window.open('', '', 'width=900,height=700');
-
-    win.document.write(`
-        <html>
-        <head>
-            <title>Print Preview</title>
-
-            <style>
-                body{
-                    font-family: Arial, sans-serif;
-                    padding:20px;
-                    line-height:1.7;
-                }
-
-                p{
-                    margin:4px 0;
-                }
-
-                hr{
-                    margin:15px 0;
-                }
-            </style>
-
-        </head>
-
-        <body>
-            ${content}
-        </body>
-
-        </html>
-    `);
-
-    win.document.close();
-    win.print();
 }
 // // ✅ RADIO UNSELECT (DOUBLE CLICK)
 // $(document).on('mousedown', 'input[type="radio"]', function () {
